@@ -1,11 +1,15 @@
 import type { PageX } from '@/model/Page';
 import type { UserRole } from '@/model/User';
 import { client } from '../novel/client';
-
 import { AuthUrl } from '@/util/useUserData/api';
 
+// 开发环境走 Vite proxy 同源避免跨域，生产环境走 Auth 服务器
+const AuthApiBase = window.location.host.startsWith('localhost:')
+  ? ''
+  : AuthUrl;
+
 const clientAuth = client.extend({
-  prefixUrl: AuthUrl + '/api/v1/admin',
+  prefixUrl: AuthApiBase + '/api/v1/admin',
   credentials: 'include',
 });
 

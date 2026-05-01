@@ -123,7 +123,7 @@ function useUserDataWithAuth(app: string) {
 
 export function useUserData(app: string) {
   const mode = import.meta.env.VITE_API_MODE;
-  if (mode === 'local' || mode === 'native') {
+  if (mode === 'local') {
     return useUserDataWithoutAuth(app);
   } else {
     return useUserDataWithAuth(app);

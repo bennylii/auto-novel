@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import Sonda from 'sonda/vite';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -48,6 +49,17 @@ export default defineConfig(({ mode }) => {
     server: {
       allowedHosts: true,
       proxy: {
+        // Auth API → Go 后端 (8080)，加在最前面优先匹配
+        '/api/v1/auth': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api/, ''),
+        },
+        '/api/v1/admin': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api/, ''),
+        },
         '/api': {
           target: apiUrl,
           changeOrigin: true,
@@ -77,7 +89,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     resolve: {
-      tsconfigPaths: true,
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
     plugins: [
       vue(),

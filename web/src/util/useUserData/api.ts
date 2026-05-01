@@ -5,7 +5,7 @@ export const AuthUrl = (() => {
 
   // 让 kuriko 的开发环境可以跑起来，后续需要支持开发环境免登录
   if (host.startsWith('localhost:')) {
-    return `${protocol}//localhost:8000`;
+    return `${protocol}//localhost:5174`;
   }
 
   // 不考虑 a.co.uk 这种顶级域名
@@ -16,8 +16,16 @@ export const AuthUrl = (() => {
   return `${protocol}//auth.${baseDomain}`;
 })();
 
+// Auth API 请求走主前端 Vite 代理避免跨域，iframe 登录仍用 AuthUrl
+const AuthApiBase = (() => {
+  if (window.location.host.startsWith('localhost:')) {
+    return ''; // 同源，由 Vite proxy 转发到 Go Auth 后端
+  }
+  return AuthUrl;
+})();
+
 const client = ky.create({
-  prefixUrl: AuthUrl + '/api/v1',
+  prefixUrl: AuthApiBase + '/api/v1',
   credentials: 'include',
 });
 
